@@ -9,13 +9,12 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect // PERBAIKAN 1: Tambah Import ini
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.tugasakhirpam.R
 import com.example.tugasakhirpam.modeldata.Antrian
 import com.example.tugasakhirpam.uicontroller.route.DestinasiHome
 import com.example.tugasakhirpam.uicontroller.viewmodel.AntrianUiState
@@ -29,11 +28,9 @@ fun HalamanHomeAntrian(
     onDetailClick: (String) -> Unit,
     viewModel: AntrianViewModel = viewModel(factory = PenyediaViewModel.Factory)
 ) {
-    // PERBAIKAN 2: Tambahkan kode ini agar otomatis refresh saat halaman dibuka
     LaunchedEffect(Unit) {
         viewModel.getAntrian()
     }
-    // -----------------------------------------------------------------------
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
@@ -82,7 +79,7 @@ fun HomeStatus(
         is AntrianUiState.Success ->
             if (antrianUiState.antrian.isEmpty()) {
                 Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(text = "Tidak ada data antrian") // Ubah text jika resource R.string.empty_data tidak ada
+                    Text(text = "Tidak ada data antrian")
                 }
             } else {
                 AntrianLayout(
@@ -94,7 +91,7 @@ fun HomeStatus(
             }
         is AntrianUiState.Error -> Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(text = "Gagal memuat data") // Ubah text jika resource error tidak ada
+                Text(text = "Gagal memuat data")
                 Button(onClick = retryAction) {
                     Text(text = "Coba Lagi")
                 }
@@ -142,9 +139,36 @@ fun AntrianCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = antrian.namaPasien, style = MaterialTheme.typography.titleLarge)
-                Text(text = antrian.poli, style = MaterialTheme.typography.bodyMedium)
-                Text(text = antrian.noRekamMedis, style = MaterialTheme.typography.bodySmall)
+                // Nama Pasien
+                Text(
+                    text = antrian.namaPasien,
+                    style = MaterialTheme.typography.titleLarge
+                )
+
+                // Poli
+                Text(
+                    text = "Poli: ${antrian.poli}",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+                Text(
+                    text = "Dokter: ${antrian.dokter ?: "-"}", // Pakai ?: "-" biar aman
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold // Saya tebalkan sedikit biar jelas
+                )
+
+                Text(
+                    text = "Status: ${antrian.status ?: "Menunggu"}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+
+                // No RM
+                Text(
+                    text = "No RM: ${antrian.noRekamMedis}",
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
             }
             IconButton(onClick = { onDeleteClick(antrian) }) {
                 Icon(imageVector = Icons.Default.Delete, contentDescription = null)

@@ -1,8 +1,8 @@
 package com.example.tugasakhirpam.uicontroller.route
 
 object DestinasiDetail : DestinasiNavigasi {
-    override val route = "detail_antrian"
+    override val route = "item_detail"
     override val titleRes = "Detail Antrian"
-    const val idArg = "id"
-    val routeWithArgs = "$route/{$idArg}"
+    const val itemIdArg = "itemId"
+    val routeWithArgs = "$route/{$itemIdArg}"
 }

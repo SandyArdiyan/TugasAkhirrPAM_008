@@ -12,7 +12,6 @@ import com.example.tugasakhirpam.uicontroller.route.DestinasiEdit
 import com.example.tugasakhirpam.uicontroller.route.DestinasiEntry
 import com.example.tugasakhirpam.uicontroller.route.DestinasiHome
 import com.example.tugasakhirpam.uicontroller.view.HalamanHomeAntrian
-// BAGIAN INI SAYA NYALAKAN (Hapus tanda //)
 import com.example.tugasakhirpam.uicontroller.view.HalamanEntryAntrian
 import com.example.tugasakhirpam.uicontroller.view.HalamanDetailAntrian
 import com.example.tugasakhirpam.uicontroller.view.HalamanEditAntrian
@@ -47,13 +46,14 @@ fun PetaNavigasi(
         // --- HALAMAN DETAIL ---
         composable(
             route = DestinasiDetail.routeWithArgs,
-            arguments = listOf(navArgument(DestinasiDetail.idArg) { type = NavType.StringType })
+            // PERBAIKAN 1: Gunakan itemIdArg
+            arguments = listOf(navArgument(DestinasiDetail.itemIdArg) { type = NavType.StringType })
         ) {
-            val antrianId = it.arguments?.getString(DestinasiDetail.idArg)
+            // PERBAIKAN 2: Gunakan itemIdArg
+            val antrianId = it.arguments?.getString(DestinasiDetail.itemIdArg)
             antrianId?.let { id ->
                 HalamanDetailAntrian(
                     navigateBack = { navController.popBackStack() },
-                    // GANTI 'onEditClick' MENJADI 'navigateToEditItem'
                     navigateToEditItem = { navController.navigate("${DestinasiEdit.route}/$id") }
                 )
             }
@@ -62,9 +62,9 @@ fun PetaNavigasi(
         // --- HALAMAN EDIT ---
         composable(
             route = DestinasiEdit.routeWithArgs,
-            arguments = listOf(navArgument(DestinasiEdit.idArg) { type = NavType.StringType })
+            // PERBAIKAN 3: Gunakan itemIdArg
+            arguments = listOf(navArgument(DestinasiEdit.itemIdArg) { type = NavType.StringType })
         ) {
-            // Kita nyalakan juga halaman Edit
             HalamanEditAntrian(
                 navigateBack = { navController.popBackStack() },
                 onNavigateUp = { navController.navigateUp() }

@@ -25,7 +25,7 @@ class DetailAntrianViewModel(
 ) : ViewModel() {
 
     // Menangkap ID dari argumen navigasi
-    private val _idAntrian: String = checkNotNull(savedStateHandle[DestinasiDetail.idArg])
+    private val _idAntrian: String = checkNotNull(savedStateHandle[DestinasiDetail.itemIdArg])
 
     // State untuk UI (Loading, Success, Error)
     var antrianDetailState: AntrianDetailUiState by mutableStateOf(AntrianDetailUiState.Loading)

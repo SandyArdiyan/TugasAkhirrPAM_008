@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.tugasakhirpam.modeldata.Antrian
 import com.example.tugasakhirpam.repositori.RepositoryAntrian
 import kotlinx.coroutines.launch
-import java.io.IOException
+// import java.io.IOException <-- Hapus atau biarkan tidak terpakai
 
 sealed interface AntrianUiState {
     data class Success(val antrian: List<Antrian>) : AntrianUiState
@@ -29,7 +29,8 @@ class AntrianViewModel(private val repositoryAntrian: RepositoryAntrian) : ViewM
             antrianUiState = AntrianUiState.Loading
             antrianUiState = try {
                 AntrianUiState.Success(repositoryAntrian.getAntrian())
-            } catch (e: IOException) {
+            } catch (e: Exception) { // <--- UBAH JADI Exception
+                e.printStackTrace() // Tambahkan ini biar kita bisa lihat errornya di Logcat
                 AntrianUiState.Error
             }
         }
@@ -39,8 +40,9 @@ class AntrianViewModel(private val repositoryAntrian: RepositoryAntrian) : ViewM
         viewModelScope.launch {
             try {
                 repositoryAntrian.deleteAntrian(id)
-                getAntrian() // Refresh data
-            } catch (e: IOException) {
+                getAntrian()
+            } catch (e: Exception) { // <--- UBAH JADI Exception
+                e.printStackTrace()
                 antrianUiState = AntrianUiState.Error
             }
         }

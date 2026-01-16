@@ -5,18 +5,21 @@ import retrofit2.Response
 import retrofit2.http.*
 
 interface ServiceApiRumahSakit {
-    @GET("antrian")
+    @GET("getAntrian.php")
     suspend fun getAntrian(): List<Antrian>
 
-    @GET("antrian/{id}")
-    suspend fun getAntrianById(@Path("id") id: String): Antrian
+    // Must match getAntrianById.php
+    @GET("getAntrianById.php")
+    suspend fun getAntrianById(@Query("id") id: String): Antrian
 
-    @POST("antrian")
+    @POST("insertAntrian.php")
     suspend fun insertAntrian(@Body antrian: Antrian)
 
-    @PUT("antrian/{id}")
-    suspend fun updateAntrian(@Path("id") id: String, @Body antrian: Antrian)
+    // Must match updateAntrian.php
+    @POST("updateAntrian.php")
+    suspend fun updateAntrian(@Query("id") id: String, @Body antrian: Antrian)
 
-    @DELETE("antrian/{id}")
-    suspend fun deleteAntrian(@Path("id") id: String): Response<Void>
+    // Must match deleteAntrian.php
+    @GET("deleteAntrian.php")
+    suspend fun deleteAntrian(@Query("id") id: String): Response<Void>
 }

@@ -4,10 +4,14 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Antrian(
-    val id: String, // Menggunakan String agar fleksibel (bisa UUID atau Int)
+    val id: String,
     val namaPasien: String,
     val noRekamMedis: String,
-    val alamat: String,
     val poli: String,
-    val tanggal: String
+    val alamat: String,
+    val tanggal: String,
+    val dokter: String? = null,
+
+    // PERBAIKAN: Tambahkan ? dan = null
+    val status: String? = null
 )

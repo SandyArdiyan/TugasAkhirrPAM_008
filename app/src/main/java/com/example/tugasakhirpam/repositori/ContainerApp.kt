@@ -11,8 +11,10 @@ interface AppContainer {
 }
 
 class ContainerApp : AppContainer {
-    // Ganti "10.0.2.2" dengan IP Laptop jika pakai HP Asli (misal "192.168.1.5")
-    private val baseUrl = "http://10.0.2.16:3000/api/"
+    // UBAH BAGIAN INI:
+    // Hapus port 3000. Arahkan ke folder "rumah_sakit" di htdocs.
+    // Gunakan 10.0.2.2 untuk emulator.
+    private val baseUrl = "http://10.0.2.2/rumahsakit/"
 
     private val json = Json { ignoreUnknownKeys = true }
 

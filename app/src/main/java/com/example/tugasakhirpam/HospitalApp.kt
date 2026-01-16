@@ -9,6 +9,8 @@ class HospitalApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+
+        // PERBAIKAN: Kurung harus KOSONG. Hapus kata "this".
         container = ContainerApp()
     }
 }

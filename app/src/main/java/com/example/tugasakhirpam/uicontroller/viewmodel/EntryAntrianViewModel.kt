@@ -4,43 +4,91 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.tugasakhirpam.modeldata.Antrian
 import com.example.tugasakhirpam.repositori.RepositoryAntrian
-import kotlinx.coroutines.launch
 
+// 1. DATA CLASS UNTUK UI (Wajib String, tidak boleh null)
+data class DetailAntrian(
+    val id: String = "",
+    val namaPasien: String = "",
+    val noRekamMedis: String = "",
+    val alamat: String = "",
+    val poli: String = "",
+    val dokter: String = "",
+    val tanggal: String = "",
+    val status: String = "Menunggu" // Default value
+)
+
+// 2. KONVERSI DARI UI KE DATA MODEL (Untuk Simpan ke Database)
+fun DetailAntrian.toAntrian(): Antrian = Antrian(
+    id = id,
+    namaPasien = namaPasien,
+    noRekamMedis = noRekamMedis,
+    alamat = alamat,
+    poli = poli,
+    dokter = dokter,
+    tanggal = tanggal,
+    status = status
+)
+
+// 3. KONVERSI DARI DATA MODEL KE UI (Untuk Menampilkan Data)
+// BAGIAN PENTING: Menggunakan ?: "" agar tidak crash jika data dari server kosong
+fun Antrian.toDetailAntrian(): DetailAntrian = DetailAntrian(
+    id = id,
+    namaPasien = namaPasien,
+    noRekamMedis = noRekamMedis,
+    alamat = alamat,
+    poli = poli,
+
+    // Perbaikan: Kalau dokter kosong, ganti jadi teks kosong
+    dokter = dokter ?: "",
+
+    tanggal = tanggal,
+
+    // Perbaikan: Kalau status kosong, ganti jadi "Menunggu"
+    status = status ?: "Menunggu"
+)
+
+// 4. Wrapper State
+fun Antrian.toUiStateAntrian(): InsertUiState = InsertUiState(
+    insertUiEvent = this.toDetailAntrian()
+)
+
+data class InsertUiState(
+    val insertUiEvent: DetailAntrian = DetailAntrian()
+)
+
+// 5. VIEW MODEL UTAMA
 class EntryAntrianViewModel(private val repositoryAntrian: RepositoryAntrian) : ViewModel() {
-
     var uiStateAntrian by mutableStateOf(InsertUiState())
         private set
 
-    // State untuk menangani status sukses/gagal
-    var isSuccess by mutableStateOf(false)
+    // State untuk menangani Error/Sukses
     var isError by mutableStateOf(false)
     var errorMessage by mutableStateOf("")
+    var isSuccess by mutableStateOf(false)
 
+    // Update data saat user mengetik
     fun updateUiState(detailAntrian: DetailAntrian) {
         uiStateAntrian = InsertUiState(insertUiEvent = detailAntrian)
     }
 
-    // Fungsi simpan dengan penanganan error (Try-Catch)
+    // Fungsi Simpan Data (Create)
     suspend fun saveAntrian() {
         if (validateInput()) {
             try {
-                // Reset status sebelum mencoba menyimpan
+                // Reset status error sebelum mencoba menyimpan
                 isError = false
                 errorMessage = ""
 
-                // Coba simpan ke server
                 repositoryAntrian.insertAntrian(uiStateAntrian.insertUiEvent.toAntrian())
 
-                // Jika tidak ada error di atas, berarti sukses
+                // Jika berhasil
                 isSuccess = true
             } catch (e: Exception) {
-                // Tangkap error jika server mati/koneksi gagal
+                e.printStackTrace()
                 isError = true
                 errorMessage = "Gagal menyimpan: ${e.message}"
-                isSuccess = false
             }
         } else {
             isError = true
@@ -48,44 +96,10 @@ class EntryAntrianViewModel(private val repositoryAntrian: RepositoryAntrian) : 
         }
     }
 
-    fun validateInput(uiEvent: DetailAntrian = uiStateAntrian.insertUiEvent): Boolean {
-        return with(uiEvent) {
-            namaPasien.isNotBlank() && noRekamMedis.isNotBlank() && poli.isNotBlank()
+    // Validasi Form (Tidak boleh kosong)
+    private fun validateInput(uiState: DetailAntrian = uiStateAntrian.insertUiEvent): Boolean {
+        return with(uiState) {
+            namaPasien.isNotBlank() && noRekamMedis.isNotBlank() && poli.isNotBlank() && dokter.isNotBlank()
         }
     }
 }
-
-data class InsertUiState(
-    val insertUiEvent: DetailAntrian = DetailAntrian()
-)
-
-data class DetailAntrian(
-    val id: String = "",
-    val namaPasien: String = "",
-    val noRekamMedis: String = "",
-    val alamat: String = "",
-    val poli: String = "",
-    val tanggal: String = ""
-)
-
-fun DetailAntrian.toAntrian(): Antrian = Antrian(
-    id = id,
-    namaPasien = namaPasien,
-    noRekamMedis = noRekamMedis,
-    alamat = alamat,
-    poli = poli,
-    tanggal = tanggal
-)
-
-fun Antrian.toDetailAntrian(): DetailAntrian = DetailAntrian(
-    id = id,
-    namaPasien = namaPasien,
-    noRekamMedis = noRekamMedis,
-    alamat = alamat,
-    poli = poli,
-    tanggal = tanggal
-)
-
-fun Antrian.toUiStateAntrian(): InsertUiState = InsertUiState(
-    insertUiEvent = this.toDetailAntrian()
-)

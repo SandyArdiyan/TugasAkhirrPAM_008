@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect // PERBAIKAN 1: Tambah Import ini
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -28,6 +29,12 @@ fun HalamanHomeAntrian(
     onDetailClick: (String) -> Unit,
     viewModel: AntrianViewModel = viewModel(factory = PenyediaViewModel.Factory)
 ) {
+    // PERBAIKAN 2: Tambahkan kode ini agar otomatis refresh saat halaman dibuka
+    LaunchedEffect(Unit) {
+        viewModel.getAntrian()
+    }
+    // -----------------------------------------------------------------------
+
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
@@ -75,7 +82,7 @@ fun HomeStatus(
         is AntrianUiState.Success ->
             if (antrianUiState.antrian.isEmpty()) {
                 Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(text = stringResource(R.string.empty_data))
+                    Text(text = "Tidak ada data antrian") // Ubah text jika resource R.string.empty_data tidak ada
                 }
             } else {
                 AntrianLayout(
@@ -87,9 +94,9 @@ fun HomeStatus(
             }
         is AntrianUiState.Error -> Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(text = stringResource(R.string.error))
+                Text(text = "Gagal memuat data") // Ubah text jika resource error tidak ada
                 Button(onClick = retryAction) {
-                    Text(text = stringResource(R.string.retry))
+                    Text(text = "Coba Lagi")
                 }
             }
         }

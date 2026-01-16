@@ -5,23 +5,22 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.tugasakhirpam.HospitalApp
-import com.example.tugasakhirpam.uicontroller.viewmodel.AntrianViewModel
-import com.example.tugasakhirpam.uicontroller.viewmodel.DetailAntrianViewModel
-import com.example.tugasakhirpam.uicontroller.viewmodel.EditAntrianViewModel
-import com.example.tugasakhirpam.uicontroller.viewmodel.EntryAntrianViewModel
+import com.example.tugasakhirpam.HospitalApp // Pastikan ini tidak merah. Kalau merah, ganti dengan nama file Application kamu.
 
 object PenyediaViewModel {
     val Factory = viewModelFactory {
 
+        // 1. Initializer untuk Home
         initializer {
             AntrianViewModel(aplikasiRumahSakit().container.repositoryAntrian)
         }
 
+        // 2. Initializer untuk Entry (Tambah Data)
         initializer {
             EntryAntrianViewModel(aplikasiRumahSakit().container.repositoryAntrian)
         }
 
+        // 3. Initializer untuk Detail
         initializer {
             DetailAntrianViewModel(
                 createSavedStateHandle(),
@@ -29,6 +28,7 @@ object PenyediaViewModel {
             )
         }
 
+        // 4. Initializer untuk Edit
         initializer {
             EditAntrianViewModel(
                 createSavedStateHandle(),
@@ -39,5 +39,6 @@ object PenyediaViewModel {
 }
 
 // Extension function untuk mengakses Application Container
-fun CreationExtras.aplikasiRumahSakit(): HospitalApp =
-    (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as HospitalApp)
+// Nama fungsi ini "aplikasiRumahSakit", jadi di atas harus panggil "aplikasiRumahSakit" juga.
+fun CreationExtras.aplikasiRumahSakit(): HospitalApp = // <--- HospitalApp
+    (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as HospitalApp) // <--- HospitalApp

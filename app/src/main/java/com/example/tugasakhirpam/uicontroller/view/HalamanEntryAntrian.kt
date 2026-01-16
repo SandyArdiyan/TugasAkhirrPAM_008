@@ -96,6 +96,8 @@ fun EntryBody(
     }
 }
 
+// ... (Import tetap sama, pastikan import Antrian dan viewmodel benar)
+
 @Composable
 fun FormInput(
     detailAntrian: DetailAntrian,
@@ -118,7 +120,7 @@ fun FormInput(
         OutlinedTextField(
             value = detailAntrian.noRekamMedis,
             onValueChange = { onValueChange(detailAntrian.copy(noRekamMedis = it)) },
-            label = { Text("No Rekam Medis") },
+            label = { Text("No Rekam Medis (NIK)") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
             singleLine = true
@@ -130,7 +132,7 @@ fun FormInput(
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
             singleLine = false,
-            minLines = 3
+            minLines = 2
         )
         OutlinedTextField(
             value = detailAntrian.poli,
@@ -140,6 +142,16 @@ fun FormInput(
             enabled = enabled,
             singleLine = true
         )
+        // --- TAMBAHAN SESUAI SRS (Pilih Dokter) ---
+        OutlinedTextField(
+            value = detailAntrian.dokter,
+            onValueChange = { onValueChange(detailAntrian.copy(dokter = it)) },
+            label = { Text("Dokter") },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = enabled,
+            singleLine = true
+        )
+        // ------------------------------------------
         OutlinedTextField(
             value = detailAntrian.tanggal,
             onValueChange = { onValueChange(detailAntrian.copy(tanggal = it)) },

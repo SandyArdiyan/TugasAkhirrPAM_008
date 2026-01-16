@@ -18,11 +18,13 @@ class EditAntrianViewModel(
     var antrianUiState by mutableStateOf(InsertUiState())
         private set
 
-    private val antrianId: String = checkNotNull(savedStateHandle[DestinasiEdit.idArg])
+    private val itemId: String = checkNotNull(savedStateHandle[DestinasiEdit.idArg])
 
     init {
         viewModelScope.launch {
-            antrianUiState = repositoryAntrian.getAntrianById(antrianId).toUiStateAntrian()
+            // Ambil data dari server dan masukkan ke form edit
+            val antrian = repositoryAntrian.getAntrianById(itemId)
+            antrianUiState = antrian.toUiStateAntrian()
         }
     }
 
@@ -31,14 +33,8 @@ class EditAntrianViewModel(
     }
 
     suspend fun updateAntrian() {
-        if (validateInput(antrianUiState.insertUiEvent)) {
-            repositoryAntrian.updateAntrian(antrianId, antrianUiState.insertUiEvent.toAntrian())
-        }
-    }
-
-    fun validateInput(uiEvent: DetailAntrian = antrianUiState.insertUiEvent): Boolean {
-        return with(uiEvent) {
-            namaPasien.isNotBlank() && noRekamMedis.isNotBlank() && poli.isNotBlank()
-        }
+        // Gunakan fungsi update yang ada di repository
+        // Pastikan DetailAntrian.toAntrian() sudah membawa dokter & status (dari file EntryAntrianViewModel)
+        repositoryAntrian.updateAntrian(itemId, antrianUiState.insertUiEvent.toAntrian())
     }
 }

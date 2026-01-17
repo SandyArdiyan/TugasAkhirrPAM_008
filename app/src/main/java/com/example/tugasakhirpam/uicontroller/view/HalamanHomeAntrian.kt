@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -12,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -36,15 +38,26 @@ fun HalamanHomeAntrian(
 
     Scaffold(
         topBar = {
-            HospitalTopAppBar(
-                title = DestinasiHome.titleRes,
-                canNavigateBack = false,
-                scrollBehavior = scrollBehavior
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        "ANTRIAN RUMAH SAKIT",
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                },
+                scrollBehavior = scrollBehavior,
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
             )
         },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = navigateToItemEntry,
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = Color.White,
                 shape = MaterialTheme.shapes.medium,
                 modifier = Modifier.padding(18.dp)
             ) {
@@ -109,16 +122,16 @@ fun AntrianLayout(
 ) {
     LazyColumn(
         modifier = modifier,
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        contentPadding = PaddingValues(12.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        items(antrian) { kontak ->
+        items(antrian) { item ->
             AntrianCard(
-                antrian = kontak,
+                antrian = item,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onDetailClick(kontak) },
-                onDeleteClick = { onDeleteClick(kontak) }
+                    .clickable { onDetailClick(item) },
+                onDeleteClick = { onDeleteClick(item) }
             )
         }
     }
@@ -130,48 +143,85 @@ fun AntrianCard(
     modifier: Modifier = Modifier,
     onDeleteClick: (Antrian) -> Unit = {}
 ) {
-    Card(
-        modifier = modifier,
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ElevatedCard(
+        modifier = modifier.padding(horizontal = 4.dp),
+        shape = MaterialTheme.shapes.large,
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // --- NOMOR ANTRIAN (Agar tau giliran) ---
+            Surface(
+                modifier = Modifier.size(54.dp),
+                color = MaterialTheme.colorScheme.primaryContainer,
+                shape = CircleShape
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Text(
+                        text = antrian.id,
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
             Column(modifier = Modifier.weight(1f)) {
                 // Nama Pasien
                 Text(
-                    text = antrian.namaPasien,
-                    style = MaterialTheme.typography.titleLarge
-                )
-
-                // Poli
-                Text(
-                    text = "Poli: ${antrian.poli}",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-
-                Text(
-                    text = "Dokter: ${antrian.dokter ?: "-"}", // Pakai ?: "-" biar aman
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Bold // Saya tebalkan sedikit biar jelas
-                )
-
-                Text(
-                    text = "Status: ${antrian.status ?: "Menunggu"}",
-                    style = MaterialTheme.typography.bodyMedium,
+                    text = antrian.namaPasien.uppercase(),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.ExtraBold,
                     color = MaterialTheme.colorScheme.primary
                 )
 
-                // No RM
+                // Indikator Giliran
+                if (antrian.status == "Masuk Ruangan") {
+                    Text(
+                        text = "• SEDANG DILAYANI",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color(0xFF2E7D32),
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(text = "Poli: ${antrian.poli}", style = MaterialTheme.typography.bodySmall)
                 Text(
-                    text = "No RM: ${antrian.noRekamMedis}",
+                    text = "Dokter: ${antrian.dokter ?: "-"}",
                     style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(top = 4.dp)
+                    fontWeight = FontWeight.Bold
                 )
+
+                // Status Badge
+                Surface(
+                    modifier = Modifier.padding(top = 8.dp),
+                    color = if (antrian.status == "Masuk Ruangan") Color(0xFFC8E6C9) else Color(0xFFFFECB3),
+                    shape = MaterialTheme.shapes.extraSmall
+                ) {
+                    Text(
+                        text = antrian.status ?: "Menunggu",
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = if (antrian.status == "Masuk Ruangan") Color(0xFF1B5E20) else Color(0xFFE65100)
+                    )
+                }
             }
-            IconButton(onClick = { onDeleteClick(antrian) }) {
-                Icon(imageVector = Icons.Default.Delete, contentDescription = null)
+
+            // Tombol Hapus
+            IconButton(
+                onClick = { onDeleteClick(antrian) },
+                colors = IconButtonDefaults.iconButtonColors(
+                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                    contentColor = MaterialTheme.colorScheme.error
+                )
+            ) {
+                Icon(imageVector = Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(20.dp))
             }
         }
     }
